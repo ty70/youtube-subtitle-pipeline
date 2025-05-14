@@ -3,7 +3,7 @@
 This project builds a pipeline that downloads a YouTube video, extracts its audio, transcribes the speech using Whisper, and burns hard subtitles into the video.
 
 Project Structure Example
-
+```
 ├── data/                   # Original video and audio files
 ├── output/                 # Generated subtitles and final video
 │   ├── sample.ass          # ass file (sample)
@@ -14,7 +14,7 @@ Project Structure Example
 ├── requirements.txt
 ├── README.md
 └── README_ja.md (Japanese version)
-
+```
 Sample output of video and subtitle processing
 
 output/sample.mp4 
