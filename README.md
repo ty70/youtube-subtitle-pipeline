@@ -65,7 +65,7 @@ PlayResY: 640
 ```
 これにより、字幕の位置が縦型動画に適したものになります。
 
-6. .ass 字幕を埋め込んだ最終動画出力
+6. .ass 字幕を埋め込んだ動画を出力
 ```
 ffmpeg -i data/sample.mp4 -vf "ass=output/sample.ass" -c:a copy output/sample.mp4
 ```
