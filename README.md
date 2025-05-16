@@ -21,11 +21,16 @@ output/sample.mp4
 
 How to Use
 
-1. Download YouTube Video as MP4
+1. Check what formats YouTube videos are available in
 ```
-yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 https://your_video_url -o data/input.mp4
+yt-dlp -F https://www.youtube.com/shorts/jqEtBwYljB4
 ```
-2. Convert MP4 to WAV for Whisper
+
+2. Download YouTube videos in the format you want
+```
+yt-dlp -f 18 https://www.youtube.com/shorts/jqEtBwYljB4 -o data/input.mp4
+```
+3. Convert MP4 to WAV for Whisper
 ```
 ffmpeg -i data/input.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 data/input.wav
 ```
@@ -37,7 +42,7 @@ ffmpeg -i data/input.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 data/input.wav
 
 * -ac 1: Convert to mono audio.
 
-3. Transcribe Audio Using Whisper
+4. Transcribe Audio Using Whisper
 
 scripts/whisper_transcription.py transcribes the .wav file from step 2 using OpenAI Whisper and outputs a .srt subtitle file.
 
@@ -47,25 +52,25 @@ python scripts/whisper_transcription.py --input data/input.wav --output_dir ./ou
 ```
 This will generate output/input.srt.
 
-4. Burn Subtitles (.srt) into Video
+5. Burn Subtitles (.srt) into Video
 ```
 ffmpeg -i data/input.mp4 -vf subtitles=output/input.srt output/output_with_subs.mp4
 ```
-5. Fix Subtitle Cutoff in Vertical Videos
+6. Fix Subtitle Cutoff in Vertical Videos
 
 In portrait-oriented videos, .srt subtitles may get cut off. You can convert them to .ass format and customize layout resolution to fit.
 ```
 ffmpeg -i output/input.srt output/input.ass
 ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 data/input.mp4
 ```
-Example output might be 202,360. Open output/input.ass and update these values:
+Example output might be 360,640. Open output/input.ass and update these values:
 ```
-PlayResX: 202
-PlayResY: 360
+PlayResX: 360
+PlayResY: 640
 ```
 This adjusts subtitle scaling for vertical screens.
 
-6. Burn .ass Subtitles into Final Video
+7. Burn .ass Subtitles into Final Video
 ```
 ffmpeg -i data/input.mp4 -vf "ass=output/input.ass" -c:a copy output/final_with_subs.mp4
 ```

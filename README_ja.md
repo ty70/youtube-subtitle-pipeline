@@ -20,13 +20,18 @@ output/sample.mp4
 
 実行のステップ
 
-1. YouTube 動画を mp4 でダウンロード
+1. YouTube 動画が利用可能なフォーマットを確認
 ```
-yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 https://ダウンロードするURL -o data/input.mp4
+yt-dlp -F https://www.youtube.com/shorts/jqEtBwYljB4
 ```
-2. mp4 から wav へ変換（Whisper用）
+
+2. YouTube 動画を自分の用途にあったフォーマットでダウンロード
 ```
-ffmpeg -i data/input.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 data/input.wav
+yt-dlp -f 18 https://www.youtube.com/shorts/jqEtBwYljB4 -o data/sample.mp4
+```
+3. mp4 から wav へ変換（Whisper用）
+```
+ffmpeg -i data/sample.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 data/sample.wav
 ```
 * -vn: 映像ストリームを無視します（音声のみを抽出）。
 
@@ -36,37 +41,33 @@ ffmpeg -i data/input.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 data/input.wav
 
 * -ac 1: モノラル音声に変換。
 
-3. Whisper で文字起こし
+4. Whisper で文字起こし
 
 scripts/whisper_transcription.py は、ステップ2で変換された .wav ファイルを使って日本語の文字起こしを実行し、.srt 字幕ファイルを生成するPythonスクリプトです。
 
 実行方法：
 ```
-python scripts/whisper_transcription.py --input data/input.wav --output_dir ./output --model_size medium --language ja
+python scripts/whisper_transcription.py --input data/sample.wav --output_dir ./output --model_size medium --language ja
 ```
-このスクリプトを実行すると、output/input.srt に字幕ファイルが出力されます。
+このスクリプトを実行すると、output/sample.srt に字幕ファイルが出力されます。
 
-4. 字幕ファイル（.srt）を動画に埋め込む
-```
-ffmpeg -i data/input.mp4 -vf subtitles=output/input.srt output/final_with_subs.mp4
-```
 5. 縦型動画で字幕が切れる場合
 
 縦長の動画では、.srt ファイルによる字幕が画面に収まりきらず、切れてしまうことがあります。この場合、.srt を .ass に変換し、画面サイズに合ったレイアウトを調整することで改善できます。
 ```
-ffmpeg -i output/input.srt output/input.ass
-ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 data/input.mp4
+ffmpeg -i output/sample.srt output/sample.ass
+ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 data/sample.mp4
 ```
-上記 ffprobe の出力（例：202,360）を確認し、output/input.ass ファイルをテキストエディタで開いて以下のように修正します：
+上記 ffprobe の出力（例：360,640）を確認し、output/sample.ass ファイルをテキストエディタで開いて以下のように修正します：
 ```
-PlayResX: 202
-PlayResY: 360
+PlayResX: 360
+PlayResY: 640
 ```
-これにより、字幕のサイズと位置が縦型動画に適したものになります。
+これにより、字幕の位置が縦型動画に適したものになります。
 
 6. .ass 字幕を埋め込んだ最終動画出力
 ```
-ffmpeg -i data/input.mp4 -vf "ass=output/input.ass" -c:a copy output/final_with_subs.mp4
+ffmpeg -i data/sample.mp4 -vf "ass=output/sample.ass" -c:a copy output/sample.mp4
 ```
 📦 依存関係
 
