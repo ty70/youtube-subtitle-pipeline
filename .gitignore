@@ -2,8 +2,7 @@
 venv/
 
 # 出力は無視
-data/sample.mp4
-data/sample.wav
+data/
 
 # 他の一般的な Python 開発用無視リスト（推奨）
 __pycache__/
