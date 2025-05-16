@@ -4,7 +4,7 @@
 
 プロジェクト構成例
 ```
-├── data/                   # 元の動画・音声ファイル
+├── input/                   # 元の動画・音声ファイル
 ├── output/                 # 出力された字幕・最終動画
 │   ├── sample.ass          # assファイル（サンプル）
 │   ├── sample.mp4          # mp4ファイル（サンプル）
@@ -26,11 +26,11 @@ yt-dlp -F https://www.youtube.com/shorts/jqEtBwYljB4
 
 2. YouTube 動画を自分の用途にあったフォーマットでダウンロード
 ```
-yt-dlp -f 18 https://www.youtube.com/shorts/jqEtBwYljB4 -o data/sample.mp4
+yt-dlp -f 18 https://www.youtube.com/shorts/jqEtBwYljB4 -o input/sample.mp4
 ```
 3. mp4 から wav へ変換（Whisper用）
 ```
-ffmpeg -i data/sample.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 data/sample.wav
+ffmpeg -i input/sample.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 input/sample.wav
 ```
 * -vn: 映像ストリームを無視します（音声のみを抽出）。
 
@@ -46,7 +46,7 @@ scripts/whisper_transcription.py は、ステップ2で変換された .wav フ�
 
 実行方法：
 ```
-python scripts/whisper_transcription.py --input data/sample.wav --output_dir ./output --model_size medium --language ja
+python scripts/whisper_transcription.py --input input/sample.wav --output_dir ./output --model_size medium --language ja
 ```
 このスクリプトを実行すると、output/sample.srt に字幕ファイルが出力されます。
 
@@ -66,7 +66,7 @@ PlayResY: 640
 
 6. .ass 字幕を埋め込んだ動画を出力
 ```
-ffmpeg -i data/sample.mp4 -vf "ass=output/sample.ass" -c:a copy output/sample.mp4
+ffmpeg -i input/sample.mp4 -vf "ass=output/sample.ass" -c:a copy output/sample.mp4
 ```
 📦 依存関係
 
