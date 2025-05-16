@@ -12,8 +12,7 @@
 ├── scripts/
 │   └── whisper_transcription.py
 ├── requirements.txt
-├── README.md
-└── README_ja.md(このファイル)
+└─── README.md(このファイル)
 ```
 動画・字幕処理のサンプル出力
 output/sample.mp4 
