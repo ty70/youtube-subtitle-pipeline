@@ -2,10 +2,8 @@
 venv/
 
 # 出力は無視
-output/output.mp4
-output/output.srt
-output/output.ass
-data/
+data/sample.mp4
+data/sample.wav
 
 # 他の一般的な Python 開発用無視リスト（推奨）
 __pycache__/
