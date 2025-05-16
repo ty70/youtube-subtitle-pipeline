@@ -1,87 +1,82 @@
-🎥 Automatically Add Subtitles to YouTube Videos (Whisper + ffmpeg + yt-dlp)
+🎥 YouTube動画に自動で字幕をつけるツール（Whisper + ffmpeg + yt-dlp）
 
-This project builds a pipeline that downloads a YouTube video, extracts its audio, transcribes the speech using Whisper, and burns hard subtitles into the video.
+このプロジェクトはYouTube動画をダウンロードし、その動画から音声を分離し、Whisperを使って文字起こしを行い、最終的に動画にハードサブタイトを埋め込むパイプラインです。
 
-Project Structure Example
+プロジェクト構成例
 ```
-├── data/                   # Original video and audio files
-├── output/                 # Generated subtitles and final video
-│   ├── sample.ass          # ass file (sample)
-│   ├── sample.mp4          # mp4 file (sample)
-│   └── sample.srt          # srt file (sample)
+├── data/                   # 元の動画・音声ファイル
+├── output/                 # 出力された字幕・最終動画
+│   ├── sample.ass          # assファイル（サンプル）
+│   ├── sample.mp4          # mp4ファイル（サンプル）
+│   └── sample.srt          # srtファイル（サンプル）
 ├── scripts/
 │   └── whisper_transcription.py
 ├── requirements.txt
 ├── README.md
-└── README_ja.md (Japanese version)
+└── README_ja.md(このファイル)
 ```
-Sample output of video and subtitle processing
-
+動画・字幕処理のサンプル出力
 output/sample.mp4 
 
-How to Use
+実行のステップ
 
-1. Check what formats YouTube videos are available in
+1. YouTube 動画が利用可能なフォーマットを確認
 ```
 yt-dlp -F https://www.youtube.com/shorts/jqEtBwYljB4
 ```
 
-2. Download YouTube videos in the format you want
+2. YouTube 動画を自分の用途にあったフォーマットでダウンロード
 ```
-yt-dlp -f 18 https://www.youtube.com/shorts/jqEtBwYljB4 -o data/input.mp4
+yt-dlp -f 18 https://www.youtube.com/shorts/jqEtBwYljB4 -o data/sample.mp4
 ```
-3. Convert MP4 to WAV for Whisper
+3. mp4 から wav へ変換（Whisper用）
 ```
-ffmpeg -i data/input.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 data/input.wav
+ffmpeg -i data/sample.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 data/sample.wav
 ```
-* -vn: Ignore the video stream (extract only audio).
+* -vn: 映像ストリームを無視します（音声のみを抽出）。
 
-* -acodec pcm_s16le: Encode in Linear PCM (16-bit little endian) format.
+* -acodec pcm_s16le: リニアPCM（16ビット・リトルエンディアン）フォーマットでエンコード。
 
-* -ar 16000: Set the sampling rate to 16kHz.
+* -ar 16000: サンプリングレートを16kHzに設定。
 
-* -ac 1: Convert to mono audio.
+* -ac 1: モノラル音声に変換。
 
-4. Transcribe Audio Using Whisper
+4. Whisper で文字起こし
 
-scripts/whisper_transcription.py transcribes the .wav file from step 2 using OpenAI Whisper and outputs a .srt subtitle file.
+scripts/whisper_transcription.py は、ステップ2で変換された .wav ファイルを使って日本語の文字起こしを実行し、.srt 字幕ファイルを生成するPythonスクリプトです。
 
-Run the script:
+実行方法：
 ```
-python scripts/whisper_transcription.py --input data/input.wav --output_dir ./output --model_size medium --language ja
+python scripts/whisper_transcription.py --input data/sample.wav --output_dir ./output --model_size medium --language ja
 ```
-This will generate output/input.srt.
+このスクリプトを実行すると、output/sample.srt に字幕ファイルが出力されます。
 
-5. Burn Subtitles (.srt) into Video
-```
-ffmpeg -i data/input.mp4 -vf subtitles=output/input.srt output/output_with_subs.mp4
-```
-6. Fix Subtitle Cutoff in Vertical Videos
+5. 縦型動画で字幕が切れる場合
 
-In portrait-oriented videos, .srt subtitles may get cut off. You can convert them to .ass format and customize layout resolution to fit.
+縦長の動画では、.srt ファイルによる字幕が画面に収まりきらず、切れてしまうことがあります。この場合、.srt を .ass に変換し、画面サイズに合ったレイアウトを調整することで改善できます。
 ```
-ffmpeg -i output/input.srt output/input.ass
-ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 data/input.mp4
+ffmpeg -i output/sample.srt output/sample.ass
+ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 data/sample.mp4
 ```
-Example output might be 360,640. Open output/input.ass and update these values:
+上記 ffprobe の出力（例：360,640）を確認し、output/sample.ass ファイルをテキストエディタで開いて以下のように修正します：
 ```
 PlayResX: 360
 PlayResY: 640
 ```
-This adjusts subtitle scaling for vertical screens.
+これにより、字幕の位置が縦型動画に適したものになります。
 
-7. Burn .ass Subtitles into Final Video
+6. .ass 字幕を埋め込んだ最終動画出力
 ```
-ffmpeg -i data/input.mp4 -vf "ass=output/input.ass" -c:a copy output/final_with_subs.mp4
+ffmpeg -i data/sample.mp4 -vf "ass=output/sample.ass" -c:a copy output/sample.mp4
 ```
-📦 Dependencies
+📦 依存関係
 
 - Python 3.8+
 - `ffmpeg`
 - `yt-dlp`
 - `openai-whisper`
 
-Python packages
+Python パッケージ
 ```
 pip install git+https://github.com/openai/whisper.git
 
@@ -89,14 +84,14 @@ sudo snap install yt-dlp
 
 pip install ffmpeg-python
 ```
-📝 Notes
+📝 メモ
 
-* Audio quality significantly affects transcription accuracy.
+* 音声の品質が文字起こしの精度に影響します。
 
-* Whisper runs faster on GPUs.
+* WhisperはGPUを使うと高速です。
 
-* .ass subtitles provide more flexible styling and resolution support than .srt.
+* .ass形式の字幕は、スタイルや画面サイズへの柔軟な対応が可能です。
 
-This project is released under the MIT license.
+このプロジェクトは MIT ライセンスのもとで公開されています。
 
-Feel free to open issues or suggestions!
+意見や質問があれば歓迎します！
