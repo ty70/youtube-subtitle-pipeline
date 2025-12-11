@@ -24,6 +24,21 @@ This project is a pipeline that downloads YouTube videos, extracts audio from th
 
 `output/output.mp4`
 
+## 📦 Dependencies
+
+* Python 3.8+
+* `ffmpeg`
+* `yt-dlp`
+* `openai-whisper`
+
+Python packages:
+
+```bash
+pip install git+https://github.com/openai/whisper.git
+sudo snap install yt-dlp
+pip install ffmpeg-python
+```
+
 ## Execution Steps
 
 ## for youtube
@@ -115,22 +130,6 @@ The subtitles will be saved as `output/audio.srt`.
 ```bash
 ffmpeg -i input/input.mp4 -vf "ass=output/audio.ass" -c:a copy output/output.mp4
 ```
-
-## 📦 Dependencies
-
-* Python 3.8+
-* `ffmpeg`
-* `yt-dlp`
-* `openai-whisper`
-
-Python packages:
-
-```bash
-pip install git+https://github.com/openai/whisper.git
-sudo snap install yt-dlp
-pip install ffmpeg-python
-```
-
 ## 📝 Notes
 
 * Audio quality affects transcription accuracy.
