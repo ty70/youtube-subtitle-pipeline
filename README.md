@@ -50,23 +50,6 @@ ffmpeg -i input/sample.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 input/sample.wa
 * `-ar 16000`: Set sampling rate to 16kHz.
 * `-ac 1`: Convert to mono audio.
 
-## for x.com
-
-### 1. Check available formats for the YouTube video
-```bash
-yt-dlp -F https://x.com/i/status/1998720288603987990
-```
-
-### 2-1. Download the x.com video in video-only format
-```bash
- yt-dlp -f http-832 https://x.com/i/status/1998720288603987990 -o input/input.mp4
- ```
-
-### 2-2. Download the x.com video in audio-only format
-```bash
- yt-dlp -f hls-audio-64000-Audio https://x.com/i/status/1998720288603987990 -o input/input.m4a
-```
-
 ### 4. Transcribe with Whisper
 
 `scripts/whisper_transcription.py` is a Python script that transcribes the `.wav` file into Japanese text using Whisper and generates an `.srt` subtitle file.
@@ -77,15 +60,6 @@ To run:
 python scripts/whisper_transcription.py --input input/sample.wav --output_dir ./output --model_size medium --language ja
 ```
 The subtitles will be saved as `output/sample.srt`.
-
-### 4.1 Transcribe with Whisper (for x.com)
-To run:
-
-```bash
-python scripts/whisper_transcription.py --input input/audio.m4a --output_dir ./output --model_size medium --language ja
-```
-
-The subtitles will be saved as `output/audio.srt`.
 
 ### 5. Handling subtitle clipping in vertical videos
 
@@ -109,6 +83,37 @@ This will reposition subtitles to better fit the vertical video format.
 
 ```bash
 ffmpeg -i input/input.mp4 -vf "ass=output/input.ass" -c:a copy output/output.mp4
+```
+
+## for x.com
+
+### 1'. Check available formats for the x.com video
+```bash
+yt-dlp -F https://x.com/i/status/1998720288603987990
+```
+
+### 2'. Download the x.com video in video-only format
+```bash
+ yt-dlp -f http-832 https://x.com/i/status/1998720288603987990 -o input/input.mp4
+ ```
+
+### 3'. Download the x.com video in audio-only format
+```bash
+ yt-dlp -f hls-audio-64000-Audio https://x.com/i/status/1998720288603987990 -o input/input.m4a
+```
+
+### 4'. Transcribe with Whisper
+To run:
+
+```bash
+python scripts/whisper_transcription.py --input input/audio.m4a --output_dir ./output --model_size medium --language ja
+```
+The subtitles will be saved as `output/audio.srt`.
+
+### 6'. Burn .ass subtitles into the video
+
+```bash
+ffmpeg -i input/input.mp4 -vf "ass=output/audio.ass" -c:a copy output/output.mp4
 ```
 
 ## 📦 Dependencies
